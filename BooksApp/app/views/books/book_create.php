@@ -24,8 +24,15 @@
 
             <div>
                 <div>
-                    <label for="autor">Autor Knihy<span>*</span></label>
-                    <input type="text" id="autor" name="autor" required>
+                    <label for="author">Autor Knihy<span>*</span></label>
+                    <input type="text" id="author" name="author" placeholder="Příjmení, jméno" required>
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <label for="isbn">ISBN<span>*</span></label>
+                    <input type="text" id="isbn" name="isbn" required>
                 </div>
             </div>
 
@@ -49,6 +56,36 @@
                     <input type="number" id="year" name="year" required>
                 </div>
             </div>
+
+            <div>
+                <div>
+                    <label for="price">Cena knihy</label>
+                    <input type="number" id="price" name="price" step="1">
+                </div>
+            </div>
+            
+            <div>
+                <div>
+                    <label for="link">Odkaz</label>
+                    <input type="text" id="link" name="link">
+                </div>
+            </div>
+
+             <div>
+                <div>
+                    <label for="description">Popis knihy</label>
+                    <textarea id="description" name="description" rows="10">Popis knihy: </textarea>
+                </div>
+            </div>
+
+            <div>
+                        <label>Obrázky (můžete nahrát více)</label>
+                        <label>
+                            <span>Klikni pro výběr souborů</span>
+                            <span>JPG / PNG / WebP – více souborů najednou</span>
+                            <input type="file" id="images" name="images[]" multiple accept="image/*" class="hidden">
+                        </label>
+                    </div>
 
             <div>
                 <div>
