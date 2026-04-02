@@ -1,6 +1,6 @@
 <?php
 
-
+session_start();
 // Pro účely výuky 
 
 ini_set('display_errors', 1);
