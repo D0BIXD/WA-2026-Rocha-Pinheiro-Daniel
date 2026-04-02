@@ -13,7 +13,7 @@
         </div>
 
         <div>
-        <form action="/WA-2026-Rocha-Pinheiro-Daniel/BooksApp/public/index.php?url=book/store" method="POST">
+        <form action="<?= BASE_URL ?>/index.php?url=book/store" method="POST">
             <div>
                 <label for="title">Název knihy<span>*</span></label>
                 <input type="text" id="title" name="title" required>
@@ -58,6 +58,14 @@
                 <label for="description">Popis knihy</label>
                 <textarea id="description" name="description" rows="5">Popis knihy: </textarea>
             </div>
+            <div>
+                <label>Obrázky (můžete nahrát více)</label>
+                <label>
+                <span>Klikni pro výběr souborů</span>
+                <span>JPG / PNG / WebP – více souborů najednou</span>
+                <input type="file" id="images" name="images[]" multiple accept="image/*" class="hidden">
+                </label>
+                </div>
 
             <div>
                 <button type="submit">Uložit do databáze</button>
