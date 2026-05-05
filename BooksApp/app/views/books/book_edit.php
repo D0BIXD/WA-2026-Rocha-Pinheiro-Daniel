@@ -81,7 +81,7 @@
                         
                         <!-- Podkategorie -->
                         <div class="flex flex-col">
-                            <label for="subcategory" class="block text-xs font-bold text-blue-900/40 mb-2 uppercase tracking-widest">Kategorie <span class="text-rose-500">*</span></label>
+                            <label for="subcategory" class="block text-xs font-bold text-blue-900/40 mb-2 uppercase tracking-widest">Podkategorie <span class="text-rose-500">*</span></label>
                             <div class="relative group">
                                 <select id="subcategory" name="subcategory" required
                                         class="w-full bg-blue-50/30 border border-blue-100 rounded-xl px-5 py-3 text-slate-700 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-400/10 transition-all appearance-none cursor-pointer">

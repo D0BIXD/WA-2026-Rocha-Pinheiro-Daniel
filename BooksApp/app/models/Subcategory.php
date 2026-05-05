@@ -7,9 +7,10 @@ class Subcategory {
         $this->db = $db;
     }
 
-    // Metoda pro získání všech kategorií seřazených podle názvu
-    public function getAllCategories() {
-        $stmt = $this->db->prepare("SELECT * FROM subcategories ORDER BY name ASC");
+    public function getAllSubcategories() {
+        // Opraveno na $this->db, což odpovídá tvému konstruktoru
+        $query = "SELECT * FROM subcategories ORDER BY name ASC";
+        $stmt = $this->db->prepare($query); 
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

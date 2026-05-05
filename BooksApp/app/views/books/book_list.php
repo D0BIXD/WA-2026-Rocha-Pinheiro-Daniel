@@ -61,9 +61,10 @@
                                     </td>
                                     <td class="px-6 py-5">
                                         <div class="flex justify-center items-center space-x-4">
-                                            <a href="<?= BASE_URL ?>/index.php?url=book/show/<?= $book['id'] ?>" class="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-100 rounded-lg transition-all" title="Zobrazit detail">
-                                                Detail
-                                            </a>
+                                            <!-- ZMĚNA: show -> detail -->
+<a href="<?= BASE_URL ?>/index.php?url=book/detail/<?= $book['id'] ?>" class="...">
+    Detail
+</a>
                                             
                                             <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] === $book['created_by']): ?>
                                                 <div class="h-4 w-[1px] bg-blue-100"></div>

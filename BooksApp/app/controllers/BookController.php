@@ -22,6 +22,7 @@ class BookController {
         // ZMĚNA: Načtení databáze a nového modelu Category
         require_once '../app/models/Database.php';
         require_once '../app/models/Category.php';
+        require_once '../app/models/Subcategory.php';
 
         $database = new Database();
         $db = $database->getConnection();
@@ -29,6 +30,10 @@ class BookController {
         // ZMĚNA: Získání seznamu kategorií
         $categoryModel = new Category($db);
         $categories = $categoryModel->getAllCategories();
+        
+        $subcategoryModel = new Subcategory($db); // PŘIDÁNO
+        $subcategories = $subcategoryModel->getAllSubcategories();
+
 
         require_once '../app/views/books/book_create.php';
     }
@@ -92,13 +97,17 @@ class BookController {
         require_once '../app/models/Database.php';
         require_once '../app/models/Book.php';
         require_once '../app/models/Category.php';
-
+        require_once '../app/models/Subcategory.php';
+        
         $database = new Database();
         $db = $database->getConnection();
 
         // ZMĚNA: Získání seznamu kategorií
         $categoryModel = new Category($db);
         $categories = $categoryModel->getAllCategories();
+        
+        $subcategoryModel = new Subcategory($db); // PŘIDÁNO
+        $subcategories = $subcategoryModel->getAllSubcategories();
 
         $bookModel = new Book($db);
         $book = $bookModel->getById($id);
@@ -171,6 +180,34 @@ class BookController {
             }
         }
     }
+
+    public function detail($id = null) {
+    if (!$id) {
+        $this->addErrorMessage('Nebylo zadáno ID knihy.');
+        header('Location: ' . BASE_URL . '/index.php');
+        exit;
+    }
+
+    require_once '../app/models/Database.php';
+    require_once '../app/models/Book.php';
+
+    $database = new Database();
+    $db = $database->getConnection();
+    $bookModel = new Book($db);
+    
+    // Získáme data o konkrétní knize podle ID
+    $book = $bookModel->getById($id);
+
+    if (!$book) {
+        $this->addErrorMessage('Kniha nebyla nalezena.');
+        header('Location: ' . BASE_URL . '/index.php');
+        exit;
+    }
+
+    // Načteme vzhled detailu
+    require_once '../app/views/books/book_detail.php';
+}
+
 
     public function delete($id = null) {
         if (!isset($_SESSION['user_id'])) {
