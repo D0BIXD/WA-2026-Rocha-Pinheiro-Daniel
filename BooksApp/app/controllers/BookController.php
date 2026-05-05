@@ -196,6 +196,7 @@ class BookController {
     
     // Získání dat o knize
     $book = $bookModel->getById($id);
+   
 
     // Pokud model nic nevrátil, vypiš si proč (dočasně pro ladění)
     if (!$book) {

@@ -45,66 +45,66 @@ class Book {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // OPRAVENÁ METODA S JOINEM (Pro detail s kategoriemi)
     public function getById($id) {
-        $sql = "SELECT * FROM books WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':id' => $id]);
+        $query = "SELECT b.*, 
+                         c.name AS category_name, 
+                         s.name AS subcategory_name 
+                  FROM books b
+                  LEFT JOIN categories c ON b.category = c.id 
+                  LEFT JOIN subcategories s ON b.subcategory = s.id 
+                  WHERE b.id = ?";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // --- AKTUALIZOVANÁ METODA UPDATE ---
-    // app/models/Book.php
+    public function update(
+        $id, 
+        $title, 
+        $author, 
+        $category, 
+        $subcategory, 
+        $year, 
+        $price, 
+        $isbn, 
+        $description, 
+        $link, 
+        $images, 
+        $updatedBy
+    ) {
+        $sql = "UPDATE books 
+                SET title = :title, 
+                    author = :author, 
+                    category = :category, 
+                    subcategory = :subcategory, 
+                    year = :year, 
+                    price = :price, 
+                    isbn = :isbn, 
+                    description = :description, 
+                    link = :link, 
+                    images = :images,
+                    updated_by = :updated_by
+                WHERE id = :id";
+                
+        $stmt = $this->db->prepare($sql);
 
-// PŮVODNÍ (CHYBNÉ): ... $images = [], int $updatedBy)
-// OPRAVENÉ: $updatedBy je nyní před $images
-
-// Uprav řádek 53 v Book.php (Model)
-public function update(
-    $id, 
-    $title, 
-    $author, 
-    $category, 
-    $subcategory, 
-    $year, 
-    $price, 
-    $isbn, 
-    $description, 
-    $link, 
-    $images,    // 11. pozice: teď je tu pole s obrázky (odpovídá Array v chybě)
-    $updatedBy  // 12. pozice: teď je tu ID uživatele (odpovídá číslu 1 v chybě)
-) {
-
-    $sql = "UPDATE books 
-            SET title = :title, 
-                author = :author, 
-                category = :category, 
-                subcategory = :subcategory, 
-                year = :year, 
-                price = :price, 
-                isbn = :isbn, 
-                description = :description, 
-                link = :link, 
-                images = :images,
-                updated_by = :updated_by
-            WHERE id = :id";
-            
-    $stmt = $this->db->prepare($sql);
-
-    return $stmt->execute([
-        ':id' => $id,
-        ':title' => $title,
-        ':author' => $author,
-        ':category' => $category,
-        ':subcategory' => $subcategory ?: null,
-        ':year' => $year,
-        ':price' => $price,
-        ':isbn' => $isbn,
-        ':description' => $description,
-        ':link' => $link,
-        ':images' => json_encode($images),
-        ':updated_by' => $updatedBy
-    ]);
-}
+        return $stmt->execute([
+            ':id' => $id,
+            ':title' => $title,
+            ':author' => $author,
+            ':category' => $category,
+            ':subcategory' => $subcategory ?: null,
+            ':year' => $year,
+            ':price' => $price,
+            ':isbn' => $isbn,
+            ':description' => $description,
+            ':link' => $link,
+            ':images' => json_encode($images),
+            ':updated_by' => $updatedBy
+        ]);
+    }
 
     public function delete($id) {
         $sql = "DELETE FROM books WHERE id = :id";

@@ -68,7 +68,20 @@ if (!isset($book) || !$book) {
                             <span class="text-slate-700 font-semibold"><?= htmlspecialchars($book['isbn'] ?: '---') ?></span>
                         </div>
                     </div>
+<!-- Kategorie a Podkategorie -->
+<div class="flex gap-2 mt-4 mb-6">
+    <?php if (!empty($book['category_name'])): ?>
+        <span class="bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-blue-200">
+            <?= htmlspecialchars($book['category_name']) ?>
+        </span>
+    <?php endif; ?>
 
+    <?php if (!empty($book['subcategory_name'])): ?>
+        <span class="bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-slate-200">
+            <?= htmlspecialchars($book['subcategory_name']) ?>
+        </span>
+    <?php endif; ?>
+</div>
                     <div>
                         <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Popis knihy</span>
                         <p class="text-slate-600 leading-relaxed italic">
