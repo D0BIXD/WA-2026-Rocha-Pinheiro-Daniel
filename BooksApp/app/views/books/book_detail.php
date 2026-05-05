@@ -1,5 +1,16 @@
 <?php require_once '../app/views/layout/header.php'; ?>
 
+<?php 
+// Pojistka proti prázdným datům
+if (!isset($book) || !$book) {
+    echo "<div class='container mx-auto p-10 text-center'><h1 class='text-2xl font-bold text-slate-800'>Kniha nenalezena!</h1>";
+    echo "<p class='text-slate-500 mb-6'>Zkontrolujte prosím, zda je ID knihy správné.</p>";
+    echo "<a href='".BASE_URL."/index.php' class='bg-blue-600 text-white px-6 py-2 rounded-xl'>Zpět na hlavní stranu</a></div>";
+    require_once '../app/views/layout/footer.php';
+    exit;
+}
+?>
+
 <main class="container mx-auto px-6 py-12 flex-grow">
     <div class="max-w-4xl mx-auto">
         
@@ -16,16 +27,12 @@
             <!-- Levá strana: Obrázek -->
             <div class="md:w-1/2 bg-blue-50/50 p-8 flex items-center justify-center border-r border-blue-50">
                 <?php 
-                // Dekódování JSONu z databáze
                 $images = json_decode($book['images'], true);
-                
-                // Pokud to není JSON (např. starší záznam), zkusíme to vzít jako čistý řetězec v poli
                 if (json_last_error() !== JSON_ERROR_NONE && !empty($book['images'])) {
                     $images = [$book['images']];
                 }
 
                 if (!empty($images) && is_array($images)): ?>
-                    <!-- OPRAVA CESTY: Odstraněno /public/, pokud je v BASE_URL -->
                     <img src="<?= BASE_URL ?>/uploads/<?= htmlspecialchars($images[0]) ?>" 
                          alt="Obálka" 
                          class="rounded-2xl shadow-2xl max-h-[500px] w-auto object-contain">
@@ -86,12 +93,48 @@
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $book['created_by']): ?>
                 <div class="mt-auto flex gap-3">
                     <a href="<?= BASE_URL ?>/index.php?url=book/edit/<?= $book['id'] ?>" class="flex-1 text-center bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-900 transition-all text-sm uppercase tracking-widest">
-                        Upravit
+                        Upravit detaily
                     </a>
                 </div>
                 <?php endif; ?>
             </div>
         </div>
+
+        <!-- SEKCE POZNÁMEK (pouze pro autora) -->
+        <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $book['created_by']): ?>
+        <div class="mt-12 bg-slate-50 border border-slate-200 rounded-3xl p-8 shadow-sm">
+            <h3 class="text-xl font-black text-slate-800 mb-6 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Komentář
+            </h3>
+            
+            <form action="<?= BASE_URL ?>/index.php?url=book/addComment" method="POST" class="mb-10">
+                <input type="hidden" name="book_id" value="<?= $book['id'] ?>">
+                <textarea name="content" required placeholder="Napište si poznámku k této knize..." 
+                    class="w-full bg-white border border-slate-200 rounded-2xl px-5 py-4 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all mb-4" rows="3"></textarea>
+                <button type="submit" class="bg-blue-600 text-white font-bold px-6 py-3 rounded-xl hover:bg-blue-700 transition-all uppercase text-[10px] tracking-widest">
+                    Uložit poznámku
+                </button>
+            </form>
+
+            <div class="space-y-4">
+                <?php if (!empty($comments)): ?>
+                    <?php foreach ($comments as $comment): ?>
+                        <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+                            <p class="text-slate-700"><?= nl2br(htmlspecialchars($comment['content'])) ?></p>
+                            <div class="mt-3 text-[9px] font-bold text-slate-400 uppercase">
+                                <?= date('d. m. Y | H:i', strtotime($comment['created_at'])) ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="text-slate-400 italic text-center py-4">Zatím žádné poznámky.</p>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 </main>
 
