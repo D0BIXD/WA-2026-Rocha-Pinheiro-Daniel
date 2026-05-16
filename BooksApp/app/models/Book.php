@@ -38,12 +38,29 @@ class Book {
         ]);
     }
 
-    public function getAll() {
+    /*public function getAll() {
         $sql = "SELECT * FROM books ORDER BY id DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }*/
+
+    // Získání všech knih z databáze (Nyní včetně názvu kategorie)
+    public function getAll() {
+        
+        // 💡 ZMĚNA: Místo "SELECT *" použijeme přesnější dotaz s JOINem
+        $sql = "SELECT books.*, categories.name AS category_name 
+                FROM books 
+                LEFT JOIN categories ON books.category = categories.id 
+                ORDER BY books.id DESC";
+                
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
 
     // OPRAVENÁ METODA S JOINEM (Pro detail s kategoriemi)
     public function getById($id) {

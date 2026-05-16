@@ -34,6 +34,7 @@
                             <tr class="bg-blue-50/50 border-b border-blue-100">
                                 <th class="px-6 py-5 font-bold uppercase text-xs text-blue-600 tracking-widest text-center w-16">ID</th>
                                 <th class="px-6 py-5 font-bold uppercase text-xs text-blue-600 tracking-widest">Titul a Autor</th>
+                                <th class="...">Kategorie</th>
                                 <th class="px-6 py-5 font-bold uppercase text-xs text-blue-600 tracking-widest text-center">Vydáno</th>
                                 <th class="px-6 py-5 font-bold uppercase text-xs text-blue-600 tracking-widest text-right">Cena</th>
                                 <th class="px-6 py-5 font-bold uppercase text-xs text-blue-600 tracking-widest text-center">Správa</th>
@@ -51,6 +52,9 @@
                                             <span class="text-slate-500 text-sm"><?= htmlspecialchars($book['author']) ?></span>
                                         </div>
                                     </td>
+                                    <td class="px-6 py-4 text-emerald-400 font-medium">
+                                        <?= htmlspecialchars($book['category_name'] ?? 'Nezařazeno') ?>
+                                    </td>
                                     <td class="px-6 py-5 text-center">
                                         <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold border border-blue-100">
                                             <?= htmlspecialchars($book['year']) ?>
@@ -62,19 +66,46 @@
                                     <td class="px-6 py-5">
                                         <div class="flex justify-center items-center space-x-4">
                                             <!-- ZMĚNA: show -> detail -->
-<a href="<?= BASE_URL ?>/index.php?url=book/detail/<?= $book['id'] ?>" class="...">
-    Detail
-</a>
+                                            <a href="<?= BASE_URL ?>/index.php?url=book/detail/<?= $book['id'] ?>" class="...">
+                                                Detail
+                                            </a>
                                             
-                                            <?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] === $book['created_by']): ?>
-                                                <div class="h-4 w-[1px] bg-blue-100"></div>
-                                                <a href="<?= BASE_URL ?>/index.php?url=book/edit/<?= $book['id'] ?>" class="p-2 text-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Upravit">
-                                                    Upravit
-                                                </a>
-                                                <a href="<?= BASE_URL ?>/index.php?url=book/delete/<?= $book['id'] ?>" onclick="return confirm('Opravdu chcete tuto knihu smazat?')" class="p-2 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Smazat">
-                                                    Smazat
-                                                </a>
-                                            <?php endif; ?>
+                                          <td class="px-6 py-5">
+
+
+    <div class="flex justify-center items-center space-x-4">
+        <!-- Tlačítko Detail je pro všechny stejné -->
+        <a href="<?= BASE_URL ?>/index.php?url=book/detail/<?= $book['id'] ?>" class="text-blue-600 hover:text-blue-800 font-medium">
+            Detail
+        </a>
+        
+        <?php 
+        // 1. Zjistíme, jestli je uživatel admin
+        $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
+        // 2. Zjistíme, jestli je uživatel přihlášený
+        $isLoggedIn = isset($_SESSION['user_id']);
+        // 3. Zjistíme, jestli je uživatel autorem knihy
+        $isAuthor = $isLoggedIn && $_SESSION['user_id'] === $book['created_by'];
+
+        // Tlačítka pro správu zobrazíme pouze pokud je uživatel AUTOR nebo ADMIN
+        if ($isAuthor || $isAdmin): 
+        ?>
+            <div class="h-4 w-[1px] bg-blue-100"></div>
+            
+            <a href="<?= BASE_URL ?>/index.php?url=book/edit/<?= $book['id'] ?>" 
+               class="p-2 text-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all" title="Upravit">
+                Upravit
+            </a>
+            
+            <a href="<?= BASE_URL ?>/index.php?url=book/delete/<?= $book['id'] ?>" 
+               onclick="return confirm('Opravdu chcete tuto knihu smazat?')" 
+               class="p-2 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Smazat">
+                Smazat
+            </a>
+        <?php endif; ?>
+    </div>
+</td>
+
                                         </div>
                                     </td>
                                 </tr>
