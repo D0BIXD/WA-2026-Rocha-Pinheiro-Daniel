@@ -21,9 +21,17 @@ class AuthController {
             $password = $_POST['password'] ?? '';
             $nickname = htmlspecialchars($_POST['nickname'] ?? '');
 
+            // VALIDACE HESLA: min 6 znaků a alespoň jedna číslice
+            if (strlen($password) < 6 || !preg_match('/\d/', $password)) {
+                $_SESSION['messages']['error'][] = "Heslo musí mít alespoň 6 znaků a obsahovat alespoň jednu číslici.";
+                header('Location: ' . BASE_URL . '/index.php?url=auth/register');
+                exit;
+            }
+
             if ($userModel->register($username, $email, $password, $nickname)) {
                 header('Location: ' . BASE_URL . '/index.php?url=auth/login');
             } else {
+                $_SESSION['messages']['error'][] = "Registrace selhala (email již existuje?).";
                 header('Location: ' . BASE_URL . '/index.php?url=auth/register');
             }
             exit;
@@ -47,7 +55,9 @@ class AuthController {
                 $_SESSION['user_name'] = !empty($user['nickname']) ? $user['nickname'] : $user['username'];
                 $_SESSION['is_admin'] = $user['is_admin'] ?? 0;
                 header('Location: ' . BASE_URL . '/index.php');
-            } else {
+           } else {
+                // TADY PŘIDÁVÁME CHYBOVOU ZPRÁVU
+                $_SESSION['messages']['error'][] = "Neplatný e-mail nebo heslo.";
                 header('Location: ' . BASE_URL . '/index.php?url=auth/login');
             }
             exit;

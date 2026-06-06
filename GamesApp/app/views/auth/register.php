@@ -21,9 +21,14 @@
                 <input type="email" name="email" required class="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-slate-200 text-sm focus:outline-none focus:border-emerald-500">
             </div>
             <div>
-                <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Heslo</label>
-                <input type="password" name="password" required class="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-slate-200 text-sm focus:outline-none focus:border-emerald-500">
-            </div>
+        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Heslo</label>
+        <input type="password" name="password" required 
+            class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+        
+        <p class="text-[10px] text-slate-500 mt-1.5">
+            Heslo musí obsahovat alespoň 6 znaků a jedno číslo.
+        </p>
+        </div>
 
             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black py-3 rounded text-sm uppercase tracking-wider transition-colors mt-4">
                 Vytvořit účet
@@ -33,6 +38,7 @@
         <div class="text-center border-t border-slate-800 pt-5 mt-5">
             <p class="text-slate-500 text-xs">Už máte účet? <a href="<?= BASE_URL ?>/index.php?url=auth/login" class="text-emerald-400 font-bold hover:underline">Přihlaste se</a></p>
         </div>
+        
     </div>
 </div>
 

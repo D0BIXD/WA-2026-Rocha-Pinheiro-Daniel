@@ -1,7 +1,6 @@
 <?php require_once '../app/views/layout/header.php'; ?>
 
 <?php 
-// Pojistka proti prázdným datům
 if (!isset($game) || !$game) {
     echo "<div class='max-w-2xl mx-auto p-10 text-center bg-slate-900 border border-slate-800 rounded-xl'>";
     echo "<h1 class='text-2xl font-black uppercase text-rose-500 mb-2'>Hra nenalezena!</h1>";
@@ -11,7 +10,6 @@ if (!isset($game) || !$game) {
     exit;
 }
 
-// DEKÓDOVÁNÍ OBRÁZKŮ: Převod JSON textu z DB na PHP pole
 $images = json_decode($game['images'] ?? '[]', true);
 ?>
 
@@ -85,25 +83,44 @@ $images = json_decode($game['images'] ?? '[]', true);
 
     <div class="max-w-2xl border-t border-slate-800 pt-8">
         <div class="mb-6">
-            <h3 class="text-lg font-black uppercase text-emerald-400 tracking-tight">Hráčské logy</h3>
+            <h3 class="text-lg font-black uppercase text-emerald-400 tracking-tight">Komentáře</h3>
             <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Vaše osobní poznámky a postřehy k titulu</p>
         </div>
 
         <form action="<?= BASE_URL ?>/index.php?url=game/addComment/<?= $game['id'] ?>" method="post" class="mb-8">
-            <textarea name="content" required placeholder="Zadejte log (např. splněné achievementy, herní doba, hodnocení...)" 
+            <textarea name="content" required placeholder="Napište komentář (např. hodnocení,  herní doba, splněné achievementy...)" 
                 class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm mb-3" rows="3"></textarea>
             <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black px-5 py-2.5 rounded text-xs uppercase tracking-widest transition-colors shadow-lg shadow-emerald-900/10">
-                Uložit záznam do logu
+                Uložit komentář
             </button>
         </form>
 
         <div class="space-y-4">
             <?php if (!empty($comments)): ?>
                 <?php foreach ($comments as $comment): ?>
-                    <div class="bg-slate-900 border-l-2 border-l-emerald-500 border-y-slate-800 border-r-slate-800 rounded-r-xl p-4 shadow-md">
-                        <p class="text-slate-300 text-sm leading-relaxed"><?= nl2br(htmlspecialchars($comment['content'])) ?></p>
-                        <div class="mt-3 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                            TIMESTAMP: <?= date('d. m. Y | H:i', strtotime($comment['created_at'])) ?>
+                    <div class="bg-slate-900 border-l-2 border-l-emerald-500 border-y-slate-800 border-r-slate-800 rounded-r-xl p-4 shadow-md relative group transition-all hover:bg-slate-800/50">
+                        
+                        <?php 
+                        $isAuthor = isset($_SESSION['user_id']) && $_SESSION['user_id'] == $comment['user_id'];
+                        $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
+                        if ($isAuthor || $isAdmin): 
+                        ?>
+                            <div class="absolute top-4 right-4 flex space-x-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <a href="<?= BASE_URL ?>/index.php?url=game/editComment/<?= $comment['id'] ?>" class="text-[9px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-400 bg-amber-950/30 px-2 py-1 rounded border border-amber-900/50">Upravit</a>
+                                <a href="<?= BASE_URL ?>/index.php?url=game/deleteComment/<?= $comment['id'] ?>" onclick="return confirm('Opravdu chcete tento log trvale smazat?')" class="text-[9px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-400 bg-rose-950/30 px-2 py-1 rounded border border-rose-900/50">Smazat</a>
+                            </div>
+                        <?php endif; ?>
+
+                        <p class="text-slate-300 text-sm leading-relaxed pr-24"><?= nl2br(htmlspecialchars($comment['content'])) ?></p>
+                        
+                        <div class="mt-4 pt-3 flex flex-wrap items-center justify-between text-[9px] font-bold text-slate-500 uppercase tracking-widest border-t border-slate-800/50">
+                            <span class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 mr-1 text-emerald-500">
+                                    <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+                                </svg>
+                                Uživatel: <strong class="text-emerald-400 ml-1"><?= htmlspecialchars($comment['user_name'] ?? 'Neznámý') ?></strong>
+                            </span>
+                            <span>TIMESTAMP: <?= date('d. m. Y | H:i', strtotime($comment['created_at'])) ?></span>
                         </div>
                     </div>
                 <?php endforeach; ?>

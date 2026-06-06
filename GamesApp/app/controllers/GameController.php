@@ -58,7 +58,7 @@ class GameController {
         $database = new Database();
         $db = $database->getConnection();
         $categoryModel = new Category($db);
-        $categories = $categoryModel->getAll(); // Volá metodu z Category.php
+        $categories = $categoryModel->getAll();
 
         require_once '../app/views/games/GameCreate.php';
     }
@@ -143,7 +143,7 @@ class GameController {
         }
 
         $categoryModel = new Category($db);
-        $categories = $categoryModel->getAll(); // Tady to házelo chybu, nyní opraveno!
+        $categories = $categoryModel->getAll();
 
         require_once '../app/views/games/GameEdit.php';
     }
@@ -190,7 +190,8 @@ class GameController {
                 'year' => intval($_POST['year'] ?? 0),
                 'price' => floatval($_POST['price'] ?? 0),
                 'description' => htmlspecialchars($_POST['description'] ?? ''),
-                'images' => json_encode($uploadedImages)
+                'images' => json_encode($uploadedImages),
+                'updated_by' => $_SESSION['user_id']
             ];
 
             if ($gameModel->update($id, $data)) {
@@ -263,6 +264,106 @@ class GameController {
         }
 
         header('Location: ' . BASE_URL . '/index.php?url=game/show/' . intval($gameId));
+        exit;
+    }
+
+    /* =========================================================================
+       NOVÉ: METODY PRO ÚPRAVU A SMAZÁNÍ HRÁČSKÉHO LOGU
+       ========================================================================= */
+
+    // Zobrazení formuláře pro úpravu poznámky
+    public function editComment($id) {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/index.php?url=auth/login');
+            exit;
+        }
+
+        require_once '../app/models/Database.php';
+        require_once '../app/models/Comment.php';
+
+        $database = new Database();
+        $db = $database->getConnection();
+        $commentModel = new Comment($db);
+
+        $comment = $commentModel->getById($id);
+        $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
+
+        // Ochrana: Jen autor nebo admin
+        if (!$comment || ($comment['user_id'] != $_SESSION['user_id'] && !$isAdmin)) {
+            $this->addErrorMessage('Nemáte oprávnění upravovat tento záznam.');
+            header('Location: ' . BASE_URL . '/index.php');
+            exit;
+        }
+
+        require_once '../app/views/games/CommentEdit.php';
+    }
+
+    // Zpracování úpravy poznámky v databázi
+    public function updateComment($id) {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/index.php?url=auth/login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once '../app/models/Database.php';
+            require_once '../app/models/Comment.php';
+
+            $database = new Database();
+            $db = $database->getConnection();
+            $commentModel = new Comment($db);
+
+            $comment = $commentModel->getById($id);
+            $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
+
+            if ($comment && ($comment['user_id'] == $_SESSION['user_id'] || $isAdmin)) {
+                $content = htmlspecialchars($_POST['content'] ?? '');
+                
+                if (!empty($content)) {
+                    if ($commentModel->update($id, $content)) {
+                        $this->addSuccessMessage('Log byl úspěšně upraven.');
+                    } else {
+                        $this->addErrorMessage('Chyba při úpravě logu.');
+                    }
+                } else {
+                    $this->addErrorMessage('Obsah logu nesmí být prázdný.');
+                }
+                header('Location: ' . BASE_URL . '/index.php?url=game/show/' . $comment['game_id']);
+                exit;
+            }
+        }
+    }
+
+    // Smazání poznámky
+    public function deleteComment($id) {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . BASE_URL . '/index.php?url=auth/login');
+            exit;
+        }
+
+        require_once '../app/models/Database.php';
+        require_once '../app/models/Comment.php';
+
+        $database = new Database();
+        $db = $database->getConnection();
+        $commentModel = new Comment($db);
+
+        $comment = $commentModel->getById($id);
+        $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
+
+        if ($comment && ($comment['user_id'] == $_SESSION['user_id'] || $isAdmin)) {
+            $gameId = $comment['game_id'];
+            if ($commentModel->delete($id)) {
+                $this->addSuccessMessage('Záznam byl z logu úspěšně smazán.');
+            } else {
+                $this->addErrorMessage('Při mazání záznamu nastala chyba.');
+            }
+            header('Location: ' . BASE_URL . '/index.php?url=game/show/' . $gameId);
+            exit;
+        }
+
+        $this->addErrorMessage('Nemáte oprávnění smazat tento záznam.');
+        header('Location: ' . BASE_URL . '/index.php');
         exit;
     }
 }

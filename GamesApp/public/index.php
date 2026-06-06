@@ -9,4 +9,5 @@ $baseDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 define('BASE_URL', $baseDir);
 
 require_once '../core/App.php';
+
 $app = new App();
