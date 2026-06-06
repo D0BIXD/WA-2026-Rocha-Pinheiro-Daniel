@@ -16,9 +16,13 @@ class Game {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Načtení jedné konkrétní hry podle ID
+ // Načtení jedné konkrétní hry podle ID (Včetně názvu kategorie)
     public function getById($id) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id LIMIT 0,1";
+        $query = "SELECT g.*, c.name as category_name 
+                  FROM " . $this->table_name . " g
+                  LEFT JOIN categories c ON g.category_id = c.id 
+                  WHERE g.id = :id LIMIT 0,1";
+                  
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();

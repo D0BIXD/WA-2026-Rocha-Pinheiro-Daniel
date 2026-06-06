@@ -55,9 +55,15 @@ $images = json_decode($game['images'] ?? '[]', true);
             </div>
 
             <div>
-                <h1 class="text-3xl font-black uppercase tracking-tight text-slate-100">
+                <h1 class="text-3xl font-black uppercase tracking-tight text-slate-100 mb-2">
                     <?= htmlspecialchars($game['title']) ?>
                 </h1>
+                
+                <div class="mt-2">
+                    <span class="inline-block bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-[10px] font-black px-2.5 py-1 rounded uppercase tracking-wider">
+                        <?= htmlspecialchars($game['category_name'] ?? 'Nezařazeno') ?>
+                    </span>
+                </div>
             </div>
 
             <div class="grid grid-cols-2 gap-4 bg-slate-950 border border-slate-800 rounded p-4">
@@ -72,10 +78,8 @@ $images = json_decode($game['images'] ?? '[]', true);
             </div>
 
             <div>
-                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Popis záznamu (Description)</label>
-                <div class="bg-slate-950 border border-slate-800 rounded p-4 text-slate-400 text-sm leading-relaxed whitespace-pre-line">
-                    <?= htmlspecialchars($game['description'] ?? 'K tomuto titulu nebyl do systému zaveden žádný podrobný popis.') ?>
-                </div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Popis Hry (Description)</label>
+                <div class="bg-slate-950 border border-slate-800 rounded p-4 text-slate-400 text-sm leading-relaxed whitespace-pre-line"><?= htmlspecialchars(trim($game['description'] ?? 'K tomuto titulu nebyl do systému zaveden žádný podrobný popis.')) ?></div>
             </div>
 
         </div>
@@ -88,7 +92,7 @@ $images = json_decode($game['images'] ?? '[]', true);
         </div>
 
         <form action="<?= BASE_URL ?>/index.php?url=game/addComment/<?= $game['id'] ?>" method="post" class="mb-8">
-            <textarea name="content" required placeholder="Napište komentář (např. hodnocení,  herní doba, splněné achievementy...)" 
+            <textarea name="content" required placeholder="Napište komentář (např. hodnocení, herní doba, splněné achievementy...)" 
                 class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-sm mb-3" rows="3"></textarea>
             <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black px-5 py-2.5 rounded text-xs uppercase tracking-widest transition-colors shadow-lg shadow-emerald-900/10">
                 Uložit komentář
@@ -126,7 +130,7 @@ $images = json_decode($game['images'] ?? '[]', true);
                 <?php endforeach; ?>
             <?php else: ?>
                 <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-6 text-center">
-                    <p class="text-slate-600 italic text-sm font-medium uppercase tracking-wider">Log je prázdný. Žádné záznamy k této hře.</p>
+                    <p class="text-slate-600 italic text-sm font-medium uppercase tracking-wider">Doposud nebyly přidány zádný komentáře</p>
                 </div>
             <?php endif; ?>
         </div>

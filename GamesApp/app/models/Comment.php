@@ -17,11 +17,10 @@ class Comment {
         $stmt->bindParam(':content', $content);
         return $stmt->execute();
     }
-
 // Načtení všech poznámek pro hru VČETNĚ jména autora
     public function getByGameId($gameId) {
-        // OPRAVA: Změněno u.name na u.username
-        $query = "SELECT c.*, u.username as user_name 
+        // ZMĚNA: COALESCE vybere 'nickname', ale pokud je prázdný, vezme 'username'
+        $query = "SELECT c.*, COALESCE(NULLIF(u.nickname, ''), u.username) as user_name 
                   FROM " . $this->table_name . " c
                   LEFT JOIN users u ON c.user_id = u.id
                   WHERE c.game_id = :game_id 
@@ -31,8 +30,8 @@ class Comment {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
-    // Načtení jedné konkrétní poznámky (pro editaci nebo kontrolu práv při mazání)
+
+    // Načtení jedné konkrétní poznámky
     public function getById($id) {
         $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
